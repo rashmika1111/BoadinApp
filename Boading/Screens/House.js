@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-na
 import { launchImageLibrary } from 'react-native-image-picker';
 
 const House = ({ route }) => {
-  const { location, price, district, number} = route.params;
+  const { location, price, district, number } = route.params;
   const [photos, setPhotos] = useState([]);
 
   const handleAddPhoto = () => {
@@ -18,11 +18,46 @@ const House = ({ route }) => {
         Alert.alert('Cancelled', 'Photo selection was cancelled');
       } else if (response.errorCode) {
         Alert.alert('Error', response.errorMessage);
-      } else {
+      } else if (response.assets && response.assets.length > 0) {
         const newPhoto = response.assets[0].uri;
         setPhotos([...photos, newPhoto]);
+      } else {
+        Alert.alert('Error', 'No photo selected');
       }
     });
+  };
+
+  const handleSubmit = async () => {
+    try {
+      // Prepare the data to send to the backend
+      const listingData = {
+        location,
+        district,
+        price,
+        number,
+        photos, // Array of photo URIs
+      };
+
+      // Send a POST request to the backend API
+      const response = await fetch('https://your-backend-api.com/save-listing', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(listingData),
+      });
+
+      // Handle the response
+      const result = await response.json();
+      if (response.ok) {
+        Alert.alert('Success', 'Listing submitted successfully!');
+      } else {
+        Alert.alert('Error', result.message || 'Failed to submit listing.');
+      }
+    } catch (error) {
+      console.error('Error submitting listing:', error);
+      Alert.alert('Error', 'An error occurred while submitting the listing.');
+    }
   };
 
   return (
@@ -30,7 +65,7 @@ const House = ({ route }) => {
       <Text style={styles.title}>House</Text>
       <Text style={styles.detail}>Location: {location}</Text>
       <Text style={styles.detail}>District: {district}</Text>
-      <Text style={styles.title}>Number:{number}</Text>
+      <Text style={styles.detail}>Number: {number}</Text>
       <Text style={styles.detail}>Price: {price}</Text>
 
       {/* Display Photos */}
@@ -43,6 +78,11 @@ const House = ({ route }) => {
       {/* Add Photo Button */}
       <TouchableOpacity style={styles.button} onPress={handleAddPhoto}>
         <Text style={styles.buttonText}>Add Photo</Text>
+      </TouchableOpacity>
+
+      {/* Submit Button */}
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+        <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
     </View>
   );
@@ -81,6 +121,14 @@ const styles = StyleSheet.create({
     width: '80%',
     padding: 15,
     backgroundColor: '#4CAF50',
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  submitButton: {
+    width: '80%',
+    padding: 15,
+    backgroundColor: '#2196F3',
     borderRadius: 5,
     alignItems: 'center',
   },

@@ -1,7 +1,8 @@
 // screens/CustomerDashboard.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import placeDB from '../db/placeDB';
 
 const districts = [
   'Colombo',
@@ -37,18 +38,31 @@ const CustomerDashboard = ({ navigation }) => {
   const [selectedType, setSelectedType] = useState('default');
 
   const handleSubmit = () => {
+    if (selectedType === 'default') {
+      Alert.alert('Error', 'Please select a type (House or Room)');
+      return;
+    }
+
+    // Filter data based on selected district, search area, and type
+    const filteredData = placeDB.filter((place) => {
+      const matchesDistrict =
+        selectedDistrict === 'default' || place.district === selectedDistrict;
+      const matchesArea =
+        !searchArea || place.location.toLowerCase().includes(searchArea.toLowerCase());
+      const matchesType = place.type === selectedType;
+      return matchesDistrict && matchesArea && matchesType;
+    });
+
+    if (filteredData.length === 0) {
+      Alert.alert('No Results', 'No matching places found.');
+      return;
+    }
+
+    // Navigate to the appropriate screen with filtered data
     if (selectedType === 'house') {
-      navigation.navigate('CustomerHouse', {
-        district: selectedDistrict,
-        area: searchArea,
-      });
+      navigation.navigate('CustomerHouse', { filteredData });
     } else if (selectedType === 'room') {
-      navigation.navigate('CustomerRoom', {
-        district: selectedDistrict,
-        area: searchArea,
-      });
-    } else {
-      alert('Please select a type (House or Room)');
+      navigation.navigate('CustomerRoom', { filteredData });
     }
   };
 

@@ -7,7 +7,7 @@ import { Picker } from '@react-native-picker/picker';
 const Room = ({ route }) => {
   const { location, price, district, number } = route.params;
   const [photos, setPhotos] = useState([]);
-  const [selectedPersons, setSelectedPersons] = useState('default'); // Default filter
+  const [selectedPersons, setSelectedPersons] = useState('default');
 
   const handleAddPhoto = () => {
     const options = {
@@ -29,15 +29,45 @@ const Room = ({ route }) => {
     });
   };
 
+  const handleSubmit = async () => {
+    try {
+      const listingData = {
+        location,
+        district,
+        price,
+        number,
+        selectedPersons,
+        photos,
+      };
+
+      const response = await fetch('https://your-backend-api.com/save-listing', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(listingData),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        Alert.alert('Success', 'Listing submitted successfully!');
+      } else {
+        Alert.alert('Error', result.message || 'Failed to submit listing.');
+      }
+    } catch (error) {
+      console.error('Error submitting listing:', error);
+      Alert.alert('Error', 'An error occurred while submitting the listing.');
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Rooms</Text>
+      <Text style={styles.title}>Room</Text>
       <Text style={styles.detail}>Location: {location}</Text>
       <Text style={styles.detail}>District: {district}</Text>
       <Text style={styles.detail}>Number: {number}</Text>
       <Text style={styles.detail}>Price: {price}</Text>
 
-      {/* Filter by Number of Persons */}
       <View style={styles.filterContainer}>
         <Text style={styles.filterLabel}>Filter by Number of Persons:</Text>
         <Picker
@@ -52,16 +82,18 @@ const Room = ({ route }) => {
         </Picker>
       </View>
 
-      {/* Display Photos */}
       <View style={styles.photosContainer}>
         {photos.map((photo, index) => (
           <Image key={index} source={{ uri: photo }} style={styles.photo} />
         ))}
       </View>
 
-      {/* Add Photo Button */}
       <TouchableOpacity style={styles.button} onPress={handleAddPhoto}>
         <Text style={styles.buttonText}>Add Photo</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+        <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
     </View>
   );
@@ -116,6 +148,14 @@ const styles = StyleSheet.create({
     width: '80%',
     padding: 15,
     backgroundColor: '#4CAF50',
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  submitButton: {
+    width: '80%',
+    padding: 15,
+    backgroundColor: '#2196F3',
     borderRadius: 5,
     alignItems: 'center',
   },
