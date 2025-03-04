@@ -11,6 +11,9 @@ import CustomerSignupScreen from './CustomerSignupScreen';
 import BoarderSignupScreen from './BoarderSignupScreen';
 import Room from './Room';
 import House from './House';
+import CustomerHouse from './CustomerHouse';
+import CustomerRoom
+ from './CustomerRoom';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -26,6 +29,8 @@ const AppNavigator = () => {
         <Stack.Screen name="BoarderSignup" component={BoarderSignupScreen} />
         <Stack.Screen name="Room" component={Room} />
         <Stack.Screen name="House" component={House} />
+        <Stack.Screen name="CustomerHouse" component={CustomerHouse} />
+        <Stack.Screen name="CustomerRoom" component={CustomerRoom} />
       </Stack.Navigator>
     </NavigationContainer>
   );

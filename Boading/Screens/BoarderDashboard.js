@@ -36,6 +36,7 @@ const BoarderDashboard = ({ navigation }) => {
   const [price, setPrice] = useState('');
   const [boardingType, setBoardingType] = useState('rooms');
   const [district, setDistrict] = useState('');
+  const [number, setNumber] = useState(null);
   const [showDistrictMenu, setShowDistrictMenu] = useState(false);
 
   const handleSubmit = () => {
@@ -45,9 +46,9 @@ const BoarderDashboard = ({ navigation }) => {
     }
 
     if (boardingType === 'rooms') {
-      navigation.navigate('Room', { location, price, district });
+      navigation.navigate('Room', { location, price, district,number});
     } else if (boardingType === 'house') {
-      navigation.navigate('House', { location, price, district });
+      navigation.navigate('House', { location, price, district,number});
     }
   };
 
@@ -89,6 +90,13 @@ const BoarderDashboard = ({ navigation }) => {
           placeholder="Enter Location"
           value={location}
           onChangeText={setLocation}
+        />
+
+         <TextInput
+          style={styles.input}
+          placeholder="Enter Phone Number"
+          value={number}
+          onChangeText={setNumber}
         />
 
         {/* Price Input */}

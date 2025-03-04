@@ -1,11 +1,13 @@
-// screens/House.js
+// screens/Room.js
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { Picker } from '@react-native-picker/picker';
 
 const Room = ({ route }) => {
-  const { location, price } = route.params;
+  const { location, price, district, number } = route.params;
   const [photos, setPhotos] = useState([]);
+  const [selectedPersons, setSelectedPersons] = useState('default'); // Default filter
 
   const handleAddPhoto = () => {
     const options = {
@@ -18,18 +20,37 @@ const Room = ({ route }) => {
         Alert.alert('Cancelled', 'Photo selection was cancelled');
       } else if (response.errorCode) {
         Alert.alert('Error', response.errorMessage);
-      } else {
+      } else if (response.assets && response.assets.length > 0) {
         const newPhoto = response.assets[0].uri;
         setPhotos([...photos, newPhoto]);
+      } else {
+        Alert.alert('Error', 'No photo selected');
       }
     });
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Room</Text>
+      <Text style={styles.title}>Rooms</Text>
       <Text style={styles.detail}>Location: {location}</Text>
+      <Text style={styles.detail}>District: {district}</Text>
+      <Text style={styles.detail}>Number: {number}</Text>
       <Text style={styles.detail}>Price: {price}</Text>
+
+      {/* Filter by Number of Persons */}
+      <View style={styles.filterContainer}>
+        <Text style={styles.filterLabel}>Filter by Number of Persons:</Text>
+        <Picker
+          selectedValue={selectedPersons}
+          onValueChange={(itemValue) => setSelectedPersons(itemValue)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Default" value="default" />
+          <Picker.Item label="1 Person" value="1" />
+          <Picker.Item label="2 Persons" value="2" />
+          <Picker.Item label="4 Persons" value="4" />
+        </Picker>
+      </View>
 
       {/* Display Photos */}
       <View style={styles.photosContainer}>
@@ -63,6 +84,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     marginBottom: 10,
+  },
+  filterContainer: {
+    width: '80%',
+    marginBottom: 20,
+  },
+  filterLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  picker: {
+    width: '100%',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
   },
   photosContainer: {
     flexDirection: 'row',

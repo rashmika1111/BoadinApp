@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-na
 import { launchImageLibrary } from 'react-native-image-picker';
 
 const House = ({ route }) => {
-  const { location, price } = route.params;
+  const { location, price, district, number} = route.params;
   const [photos, setPhotos] = useState([]);
 
   const handleAddPhoto = () => {
@@ -29,6 +29,8 @@ const House = ({ route }) => {
     <View style={styles.container}>
       <Text style={styles.title}>House</Text>
       <Text style={styles.detail}>Location: {location}</Text>
+      <Text style={styles.detail}>District: {district}</Text>
+      <Text style={styles.title}>Number:{number}</Text>
       <Text style={styles.detail}>Price: {price}</Text>
 
       {/* Display Photos */}
